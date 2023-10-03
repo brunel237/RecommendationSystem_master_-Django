@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
-from .models import User
+from .models import *
 
 class UserSerializer(serializers.ModelSerializer):
     # id = serializers.CharField(read_only=True )
@@ -23,7 +23,14 @@ class UserSerializer(serializers.ModelSerializer):
             'registration_number', 
             'username', 
             'password',
-            'profile_picture'
+            'level',
+            'school_subject',
+            # 'bachelor_graduate_since',
+            # 'master_graduate_since',
+            # 'phd_graduate_since',
+            # 'field_of_research',
+            # 'palmares',
+            'profile_picture',
         ]
     
     def create(self, validated_data):
@@ -43,3 +50,4 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
         
         return instance
+

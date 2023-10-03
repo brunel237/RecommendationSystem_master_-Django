@@ -1,9 +1,10 @@
 from django.http import JsonResponse
-from rest_framework import generics
+from rest_framework import generics, permissions
 from rest_framework.views import APIView
+# from django.contrib.auth
 
-from .models import User
-from .serializers import UserSerializer
+from .models import *
+from .serializers import *
 
 
 class UserUpdateAPIView(APIView):
@@ -31,6 +32,4 @@ class UserDestroyAPIView(generics.DestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     lookup_field = 'id'
-
-
 

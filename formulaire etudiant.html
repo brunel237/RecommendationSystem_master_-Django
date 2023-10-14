@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="" />
+        <meta name="keywords" content="" />
+        <title>inscription</title>
+        <link rel="icon" href="images/fav.png" type="image/png" sizes="16x16"> 
+        
+        <link rel="stylesheet" href="css/main.min.css">
+        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="css/color.css">
+        <link rel="stylesheet" href="css/responsive.css">
+    
+    </head>
+   
+    <body>
+        <!--<div class="se-pre-con"></div>-->
+        <div class="theme-layout">
+            <div class="container-fluid pdng0">
+                <div class="row merged">
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                        <div class="land-featurearea">
+                            <div class="land-meta">
+                                <h1>Winku</h1>
+                                <p>
+                                    Winku is free to use for as long as you want with two active projects.
+                                </p>
+                                <div class="friend-logo">
+                                    <span><img src="images/wink.png" alt=""></span>
+                                </div>
+                                <a href="#" title="" class="folow-me">Follow Us on</a>
+                            </div>	
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                        <div class="login-reg-bg">
+                            <div >
+                                <h2 class="log-title">INSCRIPTION</h2>
+                
+                                <div>
+                                <form >
+                                    statut : 
+                                    <select name="poste">
+                                      <option value="enseignatnt">enseignant</option>
+                                      <option value="parrain">parrain</option>
+                                      <option value="etudiant">etudiant</option>
+                                    </select>
+                                    <br>
+                                </div>
+                                </form>     
+                                <form method="post">
+                                    <div class="form-group">	
+                                            <input id="id1" type="text"  min="10" max="300" required/>
+							                <label id="demo" class="control-label" for="input">First & Last Name</label><i class="mtrl-select"></i>
+                                            <button onclick="myFunction()">OK</button>
+                                        </form>
+                                
+                                
+
+                                    </div>
+                                <form>
+                                        Sexe : <br>
+                                        <input type="radio" name="gender" value="male" checked> Male<br>
+                                        <input type="radio" name="gender" value="female"> Female<br>
+                                        <input type="radio" name="gender" value="other"> Other  
+                                </form> 
+                                <br>
+                                <form action="https://www.w3schools.com/action_page.php">
+
+                                        Date de naissance:
+                                        <input type="date" name="bday" max="2035-12-31"><br>
+                                </form>
+                                <form method="post">
+                                    <div class="form-group">	
+                                        <input type="text" required="required"/>
+                                        <label class="control-label" for="input">lieu de naissance</label><i class="mtrl-select"></i>
+                                </form>
+                                    </div>
+                                    <form method="post">
+                                    <div class="form-group">	
+                                        <input type="text" required="required"/>
+                                        <label class="control-label" for="input">nationalite</label><i class="mtrl-select"></i>
+                                    </form>
+                                </div>
+                                <form method="post">
+                                <div class="form-group">	
+                                    <input type="text" required="required"/>
+                                    <label class="control-label" for="input">region d'origine</label><i class="mtrl-select"></i>
+                                </form>
+                               </div>
+                               <form method="post">
+                               <div class="form-group">	
+                                <input type="text" required="required"/>
+                                <label class="control-label" for="input">adresse</label><i class="mtrl-select"></i>
+                              </form>
+                             </div>
+                             <form method="post">
+                             <div class="form-group">	
+                              <input type="text" required="required"/>
+                              <label class="control-label" for="input">adresse Email</label><i class="mtrl-select"></i>
+                             </form>
+                             </div>
+                             <form>
+                                Statut matrimoniale : <br>
+                                <input type="radio" name="gender" value="male" checked> Marié<br>
+                                <input type="radio" name="gender" value="female"> celibataire<br>
+                                <input type="radio" name="gender" value="other"> Other  
+                        </form> 
+                                    
+                                        <div class="form-group">	
+                                      <input type="password" required="required"/>
+                                     <label class="control-label" for="input">Password</label><i class="mtrl-select"></i>
+                                      </div>
+                                      <div class="form-group">	
+                                        <input type="password" required="required"/>
+                                       <label class="control-label" for="input">confirme you password</label><i class="mtrl-select"></i>
+                                        </div>
+                                        <script>
+                                          function myFunction() {
+                                                var inpObj = document.getElementById("id1");
+                                                if (inpObj.checkValidity() == false) {
+                                                    document.getElementById("demo").innerHTML = inpObj.validationMessage;
+                                                } else {
+                                                    document.getElementById("demo").innerHTML = "Input OK";
+                                                } 
+                                            } 
+                                            
+                                        </script>
+                                    <button type="button" onclick="document.getElementById(demo)"> submit </button>
+
+                                    <div class="checkbox">
+                                      <label>
+                                        <input type="checkbox" checked="checked"/><i class="check-box"></i>Always Remember Me.
+                                      </label>
+                                    </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

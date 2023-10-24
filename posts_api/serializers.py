@@ -11,13 +11,8 @@ class PostSerializer(serializers.ModelSerializer):
         media = data.get('media')
 
         if message is None and media is None:
-            raise serializers.ValidationError("can't make empty post")
+            raise serializers.ValidationError({"message":"can't make empty post"})
 
         return data
-    def create(self, validated_data):
-        return Post.objects.create(**validated_data)
-    
-    #def create(self, validated_data):
-       # return super().create(self, **validated_data)
-    
+
     

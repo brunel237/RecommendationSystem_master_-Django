@@ -1,53 +1,203 @@
+from django.forms import ValidationError
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 from .models import *
+from courses_api.models import AcademicLevelCourse
+
 
 class UserSerializer(serializers.ModelSerializer):
-    # id = serializers.CharField(read_only=True )
-    password = serializers.CharField(write_only=True )
-    registration_number = serializers.CharField(write_only=True)
-    
+    password = serializers.CharField(write_only=True, min_length=6)
+    password = serializers.CharField(min_length=6)
+    registration_number = serializers.CharField(min_length=6)
+    email = serializers.EmailField()
+    date_of_birth = serializers.DateField()
     class Meta:
         model = User
         fields = [
-            # 'id',
-            'first_name', 
-            'last_name', 
-            'age',
-            'date_of_birth', 
-            'email', 
-            'phone_number', 
-            'sex', 
-            'address', 
-            'email', 
-            'registration_number', 
-            'username', 
             'password',
-            'level',
-            'school_subject',
-            # 'bachelor_graduate_since',
-            # 'master_graduate_since',
-            # 'phd_graduate_since',
-            # 'field_of_research',
-            # 'palmares',
+            'first_name',
+            'last_name',
+            'username',
+            'email',
+            'sex',
+            'date_of_birth',
+            'registration_number',
+            'phone_number',
+            'address',
+            'status',
             'profile_picture',
         ]
+        
     
+    
+    def retrieve(self, validated_data, pk=None):
+        user = get_object_or_404(Lecturer.objects.select_related('user'), user=pk)
+        user = LecturerSerializer(user)
+        return user.data
+
     def create(self, validated_data):
         password = validated_data.pop('password')
         user = User(**validated_data)
-        user.set_password(make_password(password))
+        user.set_password(password)
         user.save()
-        
         return user
     
     def update(self, instance, validated_data):
-        password = validated_data.pop('password', None)
+        
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
-        if password:
-            instance.set_password(make_password(password))
         instance.save()
         
         return instance
+
+    # def update(self, instance, validated_data):
+    #     if 'password' in validated_data:
+    #         password = validated_data.pop('password')
+    #         instance.set_password(password)
+    #     if instance.status=="student":
+    #         Student.objects.update(user=instance, **validated_data)
+    #     elif instance.status=="school_elder":
+    #         SchoolElder.objects.update(user=instance, **validated_data)
+    #     else:
+    #         Lecturer.objects.update(user=instance, **validated_data)
+    #     return super().update(instance, validated_data)
+
+
+# class AcademicLevelCourseSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = AcademicLevelCourse
+#         fields = '__all__'
+
+
+
+class StudentSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    courses_attending = serializers.PrimaryKeyRelatedField(queryset=AcademicLevelCourse.objects.all(), many=True)
+    class Meta:
+        model = Student
+        fields = [
+            'user',
+            'courses_attending',
+        ]
+
+    def create(self, validated_data):
+        courses_attending = validated_data.pop('courses_attending')
+        user_data = validated_data.pop('user')
+        user_data['password'] = make_password(user_data['password'])
+        user = User.objects.create(**user_data)
+        student = Student.objects.create(user=user, **validated_data)
+        student.courses_attending.set(courses_attending)
+        return user
+
+    def update(self, instance, validated_data):
+        
+        if "courses_attending" in validated_data:
+            courses_attending = validated_data.pop('courses_attending')
+        
+            if instance.courses_attending.exists():
+                temp = instance.courses_attending.all()
+                
+                for item in temp:
+                    courses_attending.append(item.id)
+                    
+            instance.courses_attending.set(courses_attending)
+        
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        
+        return instance
+
+
+class SchoolElderSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    followers = UserSerializer(many=True)
+    courses_attending = serializers.PrimaryKeyRelatedField(queryset=AcademicLevelCourse.objects.all(), many=True)
+
+    class Meta:
+        model = SchoolElder
+        fields = '__all__'
+    
+    # def to_representation(self, instance):
+    #     representation = super().to_representation(instance)
+    #     representation['user'] = representation['user']['id']  # Replace user object with user ID
+    #     return representation
+
+    def create(self, validated_data):
+        courses_attending = validated_data.pop('courses_attending')
+        followers = validated_data.pop('followers')
+        user_data = validated_data.pop('user')
+        user, _ = User.objects.get_or_create(**user_data)
+        se = SchoolElder.objects.create(user=user, **validated_data)
+        se.followers.set(followers)
+        se.courses_attending.set(courses_attending)
+        return user
+
+    def update(self, instance, validated_data):
+        
+        if "courses_attending" in validated_data:
+            courses_attending = validated_data.pop('courses_attending')
+            if  len(courses_attending) == 0 :
+                instance.courses_attending.clear()
+            
+            elif instance.courses_attending.exists():
+                temp = instance.courses_attending.all()
+                
+                for item in temp:
+                    courses_attending.append(item.id)
+                    
+            instance.courses_attending.set(courses_attending)
+        
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        
+        return instance
+
+
+class LecturerSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    lectures = serializers.PrimaryKeyRelatedField(queryset=AcademicLevelCourse.objects.all(), many=True)
+    followers = UserSerializer(many=True)
+    
+    class Meta:
+        model = Lecturer
+        fields = '__all__'
+    
+    def get_serialized_lecturer(self, user):
+        return get_object_or_404(Lecturer.objects.select_related('user'), user=user)
+
+
+    def create(self, validated_data):
+        lectures = validated_data.pop('lectures')
+        followers = validated_data.pop('followers')
+        user_data = validated_data.pop('user')
+        user = User.objects.create(**user_data)
+        lecturer = Lecturer.objects.create(user=user, **validated_data)
+        lecturer.lectures.set(lectures)
+        return user
+    
+    def update(self, instance, validated_data):
+        
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        
+        return instance
+
+    # def update(self, instance, validated_data):
+    #     user_data = validated_data.pop('user', {})
+    #     lectures = validated_data.pop('lectures', None)
+    #     user = instance.user
+    #     if lectures is not None:
+    #         instance.lectures.set(lectures)
+    #     if user_data:
+    #         for attr, value in user_data.items():
+    #             setattr(user, attr, value)
+    #         if 'password' in user_data:
+    #             user.set_password(user_data['password'])
+    #         user.save()
+    #     return super().update(instance, validated_data)
+
 

@@ -41,8 +41,15 @@ INSTALLED_APPS = [
     'auth_api',
     'messages_api',
     'forums_api',
+    'inbox_api',
+    'courses_api',
+    'faculties_api',
+    'departments_api',
+    'posts_api',
+    'recommendation_api',
     'rest_framework',
     'rest_framework.authtoken',
+    # 'django_faker',
 ]
 
 MIDDLEWARE = [

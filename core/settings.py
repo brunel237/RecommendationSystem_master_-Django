@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'auth_api',
     'messages_api',
     'forums_api',
+    'posts_api',
+    'comments_api',
     'rest_framework',
     'rest_framework.authtoken',
 ]

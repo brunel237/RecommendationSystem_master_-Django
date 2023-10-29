@@ -23,6 +23,9 @@ urlpatterns = [
     path('api/users/', include( 'users_api.urls', namespace="users_api")),
     path('api/forums/', include( 'forums_api.urls', namespace="forums_api")),
     path('api/messages/', include( 'messages_api.urls', namespace="messages_api")),
+    path('api/posts/',include('posts_api.urls',namespace="post_api")),
+    path('api/comments/',include('comments_api.urls',namespace="comments_api")),
+    
 ]
 
 

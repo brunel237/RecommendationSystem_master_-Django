@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Profil Utilisateur</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="script.js"></script>
+  <style>
+    /* Style CSS optionnel pour la mise en page */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    input[type=text], textarea {
+      width: 100%;
+      padding: 5px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Profil Utilisateur</h1>
+  <form id="profileForm">
+    <label for="name">Nom:</label>
+    <input type="text" id="name" name="name" required>
+    
+    <label for="email">Email:</label>
+    <input type="text" id="email" name="email" required>
+    
+    <label for="bio">Biographie:</label>
+    <textarea id="bio" name="bio" rows="4"></textarea>
+    
+    <button type="submit">Enregistrer</button>
+  </form>
+  
+  <div id="profileData"></div>
+
+  <script>
+    $(document).ready(function() {
+      // Pré-remplir les champs avec les données existantes
+      var profileData = {
+        name: "John Doe",
+        email: "johndoe@example.com",
+        bio: "Je suis un utilisateur passionné de développement web."
+      };
+
+      $('#name').val(profileData.name);
+      $('#email').val(profileData.email);
+      $('#bio').val(profileData.bio);
+
+      // Soumettre le formulaire
+      $('#profileForm').submit(function(event) {
+        event.preventDefault(); // Empêcher le rechargement de la page
+
+        // Récupérer les valeurs du formulaire
+        var name = $('#name').val();
+        var email = $('#email').val();
+        var bio = $('#bio').val();
+
+        // Afficher les données dans la section de profil
+        $('#profileData').html('<h2>Profil</h2><p><strong>Nom:</strong> ' + name + '</p><p><strong>Email:</strong> ' + email + '</p><p><strong>Biographie:</strong> ' + bio + '</p>');
+      });
+    });
+  </script>
+</body>
+</html>

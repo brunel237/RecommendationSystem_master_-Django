@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class PostsApiConfig(AppConfig):
+class CommentsApiConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'posts_api'
+    name = 'comments_api'

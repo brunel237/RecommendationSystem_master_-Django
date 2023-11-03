@@ -42,12 +42,17 @@ INSTALLED_APPS = [
     'auth_api',
     'messages_api',
     'forums_api',
+<<<<<<< HEAD
     'inbox_api',
     'courses_api',
     'faculties_api',
     'departments_api',
     'posts_api',
     'recommendation_api',
+=======
+    'posts_api',
+    'comments_api',
+>>>>>>> 607e2508009c528d8f81cd18e546d4aacaf227f9
     'rest_framework',
     'rest_framework.authtoken',
     # 'django_faker',

@@ -36,7 +36,7 @@ class SignupView(generics.CreateAPIView):
                 with transaction.atomic():
                     user = slz.save()
                     token = Token.objects.create(user=user)
-                return JsonResponse({'success':True, 'token':token.key}, status=201)
+                return JsonResponse({'success':True, 'token':token.key, 'user':user}, status=201)
             except Exception as e:
                 return  JsonResponse({'success':False, 'message':str(e)}, status=401)
         else:
@@ -56,8 +56,9 @@ class LoginView(generics.CreateAPIView):
             token, _ = Token.objects.get_or_create(user=user)
             user.is_active = True
             user.save()
-            return JsonResponse({'success':True, 'token': token.key}, status=200)
-        return JsonResponse({'success':False, 'detail': 'Invalid credentials'}, status=401)
+            user = UserSerializer(user)
+            return JsonResponse({'success':True, 'token': token.key, 'user':user.data}, status=200)
+        return JsonResponse({'success':False, 'message': 'Invalid credentials'}, status=401)
 
 
 

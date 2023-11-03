@@ -27,6 +27,22 @@ class ForumViewSet(viewsets.ModelViewSet):
             return Response({'success': False, 'message': str(e)}, 400)
         return Response({'success': True, 'message': serializer.data})
     
+    def send_message(self, request, pk=None):
+        try:
+            with transaction.atomic():
+                slz = MessageSerializer(data = request.data, partial=True)
+                slz.is_valid(raise_exception=True)
+                msg = slz.save()
+                forum = Forum.objects.get(id=pk)
+                forum.messages.add(msg)
+                
+                serializer = ForumSerializer(instance=forum, partial=True)
+
+        except Exception as e:
+            return Response({'success': False, 'message': str(e)}, 400)
+        return Response({'success': True, 'message': serializer.data})
+    
+    
     def destroy(self, request, pk=None):
         forum = Forum.objects.get(id=pk)
         if not bool(request.data) :

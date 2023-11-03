@@ -21,12 +21,6 @@ class UserViewSet(viewsets.ModelViewSet):
         serialized_data = serializer.data
         return JsonResponse(serialized_data)
     
-    # def list(self, request, *args, **kwargs):
-    #     serializers = self.get_serializer(data=request.data)
-    #     # serializers.is_valid(raise_exception=True)
-    #     # users = serializers.save()
-    #     # serialized_message = self.get_serializer(users)
-    #     return JsonResponse({"success": True, "messages": serializers.data})
     def user_list(self,request=None, validated_data=None):
         users = User.objects.all()
         resp = []
@@ -94,59 +88,7 @@ class UserViewSet(viewsets.ModelViewSet):
             return JsonResponse({'success':False, 'message': 'Action Denied !'}, status=405)
 
         return super().destroy(request, *args, **kwargs)
-# class StudentViewSet(viewsets.ModelViewSet):
-#     permission_classes = [permissions.IsAuthenticated]
-#     serializer_class = StudentSerializer
-#     queryset = Student.objects.all()
-#     lookup_field = 'id'
+
+    def profile(self, request, pk=None):
+        pass
     
-# class SchoolElderViewSet(viewsets.ModelViewSet):
-#     permission_classes = [permissions.IsAuthenticated]
-#     serializer_class = SchoolElderSerializer
-#     queryset = SchoolElder.objects.all()
-#     lookup_field = 'id'
-    
-# class LecturerViewSet(viewsets.ModelViewSet):
-#     permission_classes = [permissions.IsAuthenticated]
-#     serializer_class = LecturerSerializer
-#     queryset = Lecturer.objects.all()
-#     lookup_field = 'id'
-
-
-# class UserUpdateAPIView(APIView):
-#     permission_classes = [permissions.IsAuthenticated]
-#     def put(self, request, id):
-#         try:
-#             user = User.objects.get(id=id)
-#         except User.DoesNotExist:
-#             return JsonResponse({'success':False,'message':'User not found.'}, status=404)
-        
-#         # user = User.objects.get(id=id)
-#         serializer = UserSerializer(user, data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return JsonResponse({'success':True, 'message':serializer.data}, status=201)
-#         return JsonResponse({'success':False, 'message':serializer.errors}, status=400)
-
-
-# class UserRetrieveAPIView(generics.RetrieveAPIView):
-#     queryset = User.objects.all()
-#     serializer_class = UserSerializer
-#     lookup_field = 'id'
-#     permission_classes = [permissions.IsAuthenticated]
-    
-#     def get(self, request, id):
-#         user = User.objects.get(id=id)
-#         if user is None:
-#             return JsonResponse({'success':False, 'message':'No such user'})
-#         level = user.level
-#         if level in ["L1", "L2", "L3"]:
-#             serializer = StudentSerializer(data=request.data)
-
-
-# class UserDestroyAPIView(generics.DestroyAPIView):
-#     queryset = User.objects.all()
-#     serializer_class = UserSerializer
-#     lookup_field = 'id'
-#     permission_classes = [permissions.IsAuthenticated]
-

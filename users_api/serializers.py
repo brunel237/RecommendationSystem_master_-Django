@@ -7,15 +7,14 @@ from courses_api.models import AcademicLevelCourse
 
 
 class UserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, min_length=6)
-    password = serializers.CharField(min_length=6)
+    
     registration_number = serializers.CharField(min_length=6)
     email = serializers.EmailField()
     date_of_birth = serializers.DateField()
     class Meta:
         model = User
         fields = [
-            'password',
+            'id',
             'first_name',
             'last_name',
             'username',
@@ -28,7 +27,9 @@ class UserSerializer(serializers.ModelSerializer):
             'status',
             'profile_picture',
         ]
-        
+        extra_kwargs = {
+            'password': {'write_only': True},
+        }
     
     
     def retrieve(self, validated_data, pk=None):

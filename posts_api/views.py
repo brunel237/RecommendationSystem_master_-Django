@@ -2,10 +2,13 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework import generics,status
 from .models import Post
+from .models import Like
 from .serializers import PostSerializer
+from .serializers import Likeserializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from django.db.models import F
 
 
 class PostCreateView(generics.CreateAPIView):
@@ -54,5 +57,41 @@ class PostDeleteView(generics.DestroyAPIView):
 
 
 
+class LikeCreateView(generics.CreateAPIView):
+    queryset = Like.objects.all()
+    serializer_class = Likeserializer
+
+    permission_classes = [IsAuthenticated]
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        likes = serializer.save()
+        
+        if likes:
+            headers = self.get_success_headers(serializer.data)
+            return JsonResponse({'success': True, 'message': serializer.data}, status=status.HTTP_201_CREATED, headers=headers)
+        
+        return JsonResponse({'success': False, 'message': "This user liked the post twice, so the likes were deleted"}, status=status.HTTP_200_OK)
+    
+    
+
+class PostRetrieveView(generics.RetrieveAPIView):
+    serializer_class = PostSerializer
+    lookup_field = 'pk'
+    def get_queryset(self):
+        return Post.objects.filter(is_deleted=False)
 
 
+class PostListView(generics.ListAPIView):
+    serializer_class = PostSerializer
+
+    def get_queryset(self):
+        return Post.objects.filter(is_deleted=False)
+    
+class LikeListView(generics.ListAPIView):
+    serializer_class = Likeserializer
+
+    def get_queryset(self):
+        post_id = self.kwargs['post_id']
+        return Like.objects.filter(post_id=post_id)

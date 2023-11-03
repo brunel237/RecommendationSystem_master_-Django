@@ -1,215 +1,210 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
-from django.contrib.auth.hashers import make_password
-from django.http import JsonResponse
-# from messages_api.models import *
+from django.db import transaction
+
+from courses_api.models import *
+# from inbox_api.models import Inbox
 
 
-class Subject(models.Model):
-    name = models.CharField(max_length=255)
-    description = models.CharField(max_length=255)
+class UserManager(BaseUserManager):
+    def get_queryset(self):
+        return super().get_queryset().filter(deleted_at__isnull=True)
+    # def create_user(self, username, email, password=None, **extra_fields):
+    #     return super().create_user(username, email, password, **extra_fields)
 
-class User(AbstractBaseUser, PermissionsMixin):
-    
-    username = models.CharField(max_length=255, unique=True)
-    password = models.CharField(max_length=255)
-    
-    class UserManager(BaseUserManager):
-        def get_queryset(self):
-            return super().get_queryset().filter(deleted_at__isnull=True)
-    
+
+class User(AbstractUser):
     objects = UserManager()
-    
-    GENDER_CHOICES = [
-        ('male', 'Male'),
-        ('female', 'Female')
-    ]
-    
-    LEVEL_CHOICES = [ 
-                     ("L1", "Level 1"), 
-                     ("L2", "Level 2"), 
-                     ("L3", "Level 3"), 
-                     ("M1", "Master 1"), 
-                     ("M2", "Master 2"), 
-                     ("PreDoc", "Pre Doctorate"), 
-                     ("PhD", "PhD"), 
-                     ("Pr", "Professor") 
-                     ]
-    
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
-    
-    
-    def create_superuser(self, email, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        return User(email, make_password(password), **extra_fields)
-    
-    def save(self, *args, **kwargs):
-        if self.deleted_at is None:
-            super().save(*args, **kwargs)
-        else:pass
-    
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    age = models.SmallIntegerField()
+
+    GENDER_CHOICES = [('male', 'Male'), ('female', 'Female')]
+    STATUS_CHOICES = [('student', 'Student'), ('school_elder', 'School Elder'), ('lecturer', 'Lecturer')]
+
     date_of_birth = models.DateField()
     sex = models.CharField(max_length=10, choices=GENDER_CHOICES)
-    email = models.EmailField(unique=True)
     registration_number = models.CharField(unique=True, max_length=15)
-    phone_number = models.CharField(max_length=20, unique=True)
+    phone_number = models.CharField(max_length=50, unique=True)
     address = models.CharField(max_length=255)
     profile_picture = models.FileField(null=True, blank=True)
-    
-    level = models.CharField(max_length=100, choices=LEVEL_CHOICES, default="L1")
-    school_subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
-    
-    bachelor_graduate_since = models.DateField(blank=True, null=True)
-    master_graduate_since = models.DateField(blank=True, null=True)
-    phd_graduate_since = models.DateField(blank=True, null=True)
-    field_of_research = models.CharField(max_length=255, null=True)
-    palmares = models.TextField(max_length=255, null=True)
-    
-    created_at = models.DateTimeField(auto_now_add=True)
+
     updated_at = models.DateTimeField(auto_now_add=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
+
     last_login = models.DateTimeField(blank=True, null=True)
-    is_superuser = models.BooleanField(default=False)
+
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES)
     
-    is_student = models.BooleanField(default=True)
-    is_elder = models.BooleanField(default=False)
-    is_teacher = models.BooleanField(default=False)
-    
+    def get_user(self):
+        if self.status == "student":
+            user = get_object_or_404(Student.objects.select_related('user'), user=self.id)
+        elif self.status == "school_elder":
+            user = get_object_or_404(SchoolElder.objects.select_related('user'), user=self.id)
+        else:
+            user = get_object_or_404(Lecturer.objects.select_related('user'), user=self.id)
+        return user
+
+    def follow(self, elder):
+        if elder.status == "student":
+            return False
+        elder.followers.add(self)
+        elder.number_followers += 1
+        elder.save()
+        return True
+
+    def stop_follow(self, elder):
+        elder.followers.remove(self)
+        elder.number_followers -= 1
+        elder.save()
+        return True
+
     def delete(self):
         self.deleted_at = timezone.now()
         self.save()
-        
+
     def restore(self):
         self.deleted_at = None
         self.save()
-        
+
     def update(self):
         self.updated_at = timezone.now()
         self.save()
 
 
-    def set_password(self, password):
-        self.password = password
+class Mentor(models.Model):
+    school_elder = models.ForeignKey('SchoolElder', on_delete=models.SET_NULL, null=True, blank=True)
+    lecturer = models.ForeignKey('Lecturer', on_delete=models.SET_NULL, null=True, blank=True)
+    student = models.ForeignKey('Student', on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['*']
-    
-    is_authenticated = models.BooleanField(default=True)
-    
-    # def send_message(self, user, text, media):
-    #     chat =  Chat()
-    #     chat.save(f"{self.id}-{user.id}")
-    #     mc = MessageContent.objects.create(text=text, attached_file=media)
-    #     message = Message(self, user, chat, mc)
-    #     message.save()
-    #     return message
 
-    # def reply_message(self, message, text, media):
-    #     mc = MessageContent.objects.create(text=text, attached_file=media)
-    #     reply = Message(message.receiver, message.sender, message.chat, mc)
-    #     reply.save()
-    #     return reply
+
+class Student(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student')
+    courses_attending = models.ManyToManyField(AcademicLevelCourse, related_name='student_courses')
+    academic_mentor = models.ForeignKey(Mentor, on_delete=models.SET_NULL,related_name='academic_mentor', blank=True, null=True)
+    
+    def get_student(self):
+        student = Student.objects.select_related('user').get(id=self.id)
+        return student
+    
+    def set_mentor(self, mentor):
+        if mentor.status == "school_elder":
+            mentor, _ = Mentor.objects.get_or_create(school_elder=mentor)
+        else: 
+            mentor, _ = Mentor.objects.get_or_create(lecturer=mentor)
+        self.academic_mentor = mentor
+        self.save()
+        return True
+
+    def get_mentor(self):
+        mentor = Mentor.objects.get(student=self)
+        if mentor is not None:
+            if mentor.school_elder is not None:
+                return SchoolElder.objects.select_related('user').get(mentor.school_elder)
+            else:
+                return Lecturer.objects.select_related('user').get(mentor.lecturer)
+        return False
+    
+    def mentor_reset(self, mentor):
+        mentor = Mentor.objects.get(mentor)
+        if mentor.student == self:
+            self.academic_mentor = None
+            self.save()
+            return True
+        return False
+
+
+class SchoolElder(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='school_elder')
+    courses_attending = models.ManyToManyField(AcademicLevelCourse, related_name='school_elders_courses')
+    notoriety = models.IntegerField(default=0)
+    followers = models.ManyToManyField(User, related_name='school_elder_followers')
+    number_followers = models.IntegerField(default=0)
+
+    bachelor_graduate_since = models.DateField()
+    master_graduate_since = models.DateField(blank=True, null=True)
+    is_mentor = models.BooleanField(default=False)
+    
+    def get_school_elder(self):
+        elder = SchoolElder.objects.select_related('user').get(id=self.id)
+        return elder
+
+    def mentoring(self, student):
+        try:
+            with transaction.atomic():
+                if student.set_mentor(self):
+                    self.is_mentor = True
+                    self.mentoring_number += 1
+                    self.save()
+                    return True
+        except:
+            return False
         
-    # def delete_message(self, message):
-    #     if message.sender_id == self.id:
-    #         message.delete()
-    #         return True
-    #     else:
-    #         return False
+    def stop_mentoring(self, student):
+        try:
+            with transaction.atomic():
+                if student.mentor_reset(self):
+                    self.mentoring_number -= 1
+                    if self.mentoring_number == 0:
+                        self.is_mentor = False
+                    self.save()
+                    return True
+        except:
+            return False
+
+
+class Lecturer(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='lecturer')
+    lectures = models.ManyToManyField(AcademicLevelCourse, related_name='lectures')
+    notoriety = models.IntegerField(default=0)
+    is_mentor = models.BooleanField(default=False)
+    mentoring_number = models.IntegerField(default=0)
+    followers = models.ManyToManyField(User, related_name='lecturer_followers')
+    number_followers = models.IntegerField(default=0)
+
+    TITLES = [('phd', 'PhD'), ('pr', 'Professor')]
+    title = models.CharField(max_length=5, choices=TITLES)
+
+    bachelor_graduate_since = models.DateField()
+    master_graduate_since = models.DateField()
+    phd_graduate_since = models.DateField()
+    field_of_research = models.CharField(max_length=255, default="None")
+    biography = models.TextField(default="None")
     
-    # def show_conversation(self, user):
-    #     messages = Message.objects.filter(chat_id=f"{self.id}-{user.id}")
-    #     return messages
+    def get_lecturer(self):
+        lecturer = Lecturer.objects.select_related('user').get(id=self.id)
+        return lecturer
 
+    def mentoring(self, student):
+        try:
+            with transaction.atomic():
+                if student.set_mentor(self):
+                    self.is_mentor = True
+                    self.mentoring_number += 1
+                    self.save()
+                    return True
+        except:
+            return False
+        
+    def stop_mentoring(self, student):
+        try:
+            with transaction.atomic():
+                if student.mentor_reset(self):
+                    self.mentoring_number -= 1
+                    if self.mentoring_number == 0:
+                        self.is_mentor = False
+                    self.save()
+                    return True
+        except:
+            return False
+        
 
+# user = User.objects.get(id=80)
+# print(type(user))
 
-
-
-
-
-class SubjectOfInterest(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
-    
-
-
-
-
-class SchoolElder(User):
-    
-    # def new_chat(self):
-    #     chat = Chat.objects.get_or_create(created_by=self.id)
-    #     chat.save()
-    #     return JsonResponse({'success': True, 'message' : chat})
-    def save(self, *args, **kwargs):
-        self.is_student = False
-        self.is_elder = True
-        self.is_teacher = False
-        super().save(*args, **kwargs)
-    
-    # def new_forum(self, name, purpose=None):
-    #     chat =  Chat()
-    #     chat.save(f"{self.id}-{timezone.now().strftime}")
-    #     forum = Forum.objects.create(name=name, purpose=purpose, chat_id=chat.id, created_by=self.id)
-    #     return forum
-    
-    def new_post():pass
-    def comment_post():pass
-    def like_post():pass
-    def share_post():pass
-    
-class Teacher(User):
-    
-    # def new_chat(self):
-    #     chat = Chat.objects.get_or_create(created_by=self.id)
-    #     chat.save()
-    #     return JsonResponse({'success': True, 'message' : chat})
-
-    
-    # def new_forum(self, name, purpose=None):
-    #     chat =  Chat()
-    #     chat.save(f"{self.id}-{timezone.now().strftime}")
-    #     forum = Forum.objects.create(name=name, purpose=purpose, chat_id=chat.id, created_by=self.id)
-    #     return forum
-    
-    def new_post():pass
-    def comment_post():pass
-    def like_post():pass
-    def share_post():pass
-    
-    def save(self, *args, **kwargs):
-        self.is_student = False
-        self.is_elder = False
-        self.is_teacher = True
-        super().save(*args, **kwargs)
-    
-
-
-    # def get_participants(self):
-    #     participants = []
-    #     ids = ParticipantsForum.objects.filter(forum_id=self.id, user_id=self.id)
-    #     if ids is not None:
-    #         for id in ids:
-    #             participants.append(User.objects.get(id=id))
-    #     return participants
-    
-    # def add_participant(self, user):
-    #     ParticipantsForum.object.create(forum_id=self.id, user_id=user.id)
-    #     return True
-    
-    # def remove_participant(self, user):
-    #     ParticipantsForum.object.get(forum_id=self.id, user_id=user.id).delete()
-    #     return True
-    
-    # def number_of_participants(self):
-    #     elements = ParticipantsForum.object.filter(forum_id=self.id)
-    #     return len(elements)
-
-
-    
+# users = User.objects.prefetch_related('student').all()
+# student = Student.objects.select_related('user').get(id=1)
+# students = Student.objects.select_related('user').all()

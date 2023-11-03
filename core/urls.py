@@ -23,9 +23,16 @@ urlpatterns = [
     path('api/users/', include( 'users_api.urls', namespace="users_api")),
     path('api/forums/', include( 'forums_api.urls', namespace="forums_api")),
     path('api/messages/', include( 'messages_api.urls', namespace="messages_api")),
+<<<<<<< HEAD
+    path('api/faculties/', include( 'faculties_api.urls', namespace="faculties_api")),
+    path('api/departments/', include( 'departments_api.urls', namespace="departments_api")),
+    path('api/courses/', include( 'courses_api.urls', namespace="courses_api")),
+    path('api/inbox/', include( 'inbox_api.urls', namespace="inbox_api")),
+=======
     path('api/posts/',include('posts_api.urls',namespace="post_api")),
     path('api/comments/',include('comments_api.urls',namespace="comments_api")),
     
+>>>>>>> 607e2508009c528d8f81cd18e546d4aacaf227f9
 ]
 
 

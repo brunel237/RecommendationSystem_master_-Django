@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'django.contrib.admin',
+    'corsheaders',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -41,10 +42,20 @@ INSTALLED_APPS = [
     'auth_api',
     'messages_api',
     'forums_api',
+<<<<<<< HEAD
+    'inbox_api',
+    'courses_api',
+    'faculties_api',
+    'departments_api',
+    'posts_api',
+    'recommendation_api',
+=======
     'posts_api',
     'comments_api',
+>>>>>>> 607e2508009c528d8f81cd18e546d4aacaf227f9
     'rest_framework',
     'rest_framework.authtoken',
+    # 'django_faker',
 ]
 
 MIDDLEWARE = [
@@ -55,6 +66,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -143,7 +155,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS_ORIGIN_ALLOW_ALL = True
 
-CORS_ALLOWED_ORIGINS = "all"
+ALLOWED_HOSTS = ['*']
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 AUTH_USER_MODEL = 'users_api.User'
 

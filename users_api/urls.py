@@ -5,7 +5,10 @@ from .views import *
 app_name = "users_api"
 
 urlpatterns = [
-    path('<int:id>/', UserRetrieveAPIView.as_view(), name='user-retrieve'),
-    path('update/<int:id>/', UserUpdateAPIView.as_view(), name='user-update'),
-    path('delete/<int:id>/', UserDestroyAPIView.as_view(), name='user-destroy'),
+    
+    path('', UserViewSet.as_view({'get': 'user_list'}), name='user-list' ),
+    path('<int:id>/', UserViewSet.as_view({'get': 'user_retrieve'}), name='user-retrieve'),
+    path('<int:id>/update/', UserViewSet.as_view({'put': 'update'}), name='user-update'),
+    path('<int:id>/delete/', UserViewSet.as_view({'delete': 'destroy'}), name='user-destroy'),
+    
 ]

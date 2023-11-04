@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="" />
+        <meta name="keywords" content="" />
+        <title>inscription elders</title>
+        <link rel="icon" href="images/fav.png" type="image/png" sizes="16x16"> 
+        
+        <link rel="stylesheet" href="css/main.min.css">
+        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="css/color.css">
+        <link rel="stylesheet" href="css/responsive.css">
+        <style>
+             
+            h1.center {
+                text-align: center;
+                color: rgb(69, 134, 233);
+                font-family: "Times New Roman", Times, serif;
+            }
+        </style>
+    </head>
+    <body>
+        <!--<div class="se-pre-con"></div>-->
+        <!-- <div class="theme-layout">
+            <div class="container-fluid pdng0"> -->
+                <div class="d-flex merged">
+                    <div class="col-lg-8 col-md-6 col-sm-6 col-xs-12">
+                        <div class="land-featurearea">
+                            <div class="land-meta">
+                                <h1>SkiMedia</h1>
+                                <p>
+                                    SkiMedia is free to use for as long as you want with two active projects.
+                                </p>
+                                <div class="friend-logo">
+                                    <span><img src="images/wink.png" alt=""></span>
+                                </div>
+                                <a href="#" title="" class="folow-me">Follow Us on</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-8 col-md-6 col-sm-6 col-xs-12">
+                        <div class="login-reg-bg">
+                            <div class="log-reg-area1 sign">
+                                <br>
+                                <h1 class="center"><u><b>INSCRIPTION</b></u></h1><br>
+                   
+                   
+                                <label for="first_name">  First Name :  </label>
+                                    <input type="text" id="first_name" name="first_name" required><br>
+                                    <label for="last_name">  Last  Name :  </label>
+                                    <input type="text" id="last_name" name="last_name" required><br>
+                                    <label for="sexe">  Sexe  :  </label><br>
+                                        <input type="radio"  id= "sex" name="gender" value="male" checked> Male<br>
+                                        <input type="radio" id= "sex" name="gender" value="female"> Female<br>
+                                    <label for="date_of_birth">  Date of Birth  :  </label>
+                                    <input type="date" name="day_of_birth" max="2035-12-31"><br>
+                                    <label for="place_of_birth">  Place of Birth :  </label>
+                                    <input type="text" id="place_of_birth" name="place_of_birth" required><br>
+                                    <label for="register_number">  Register Number :  </label>
+                                    <input type="text" id="register_number" name="register_number" required><br>
+                                    <label for="phone_number">  Phone Number :   </label>
+                                    <input type="number" id="phone_number" name="phone_number" required><br>
+                                    <label for="address">  Address   :   </label>
+                                    <input type="text" id="address" name="address" required><br>
+
+                                    <label for="photo">  Photo  :  </label>
+                                    <input type="file" id="photo" name="photo" accept="image/*" onchange="previewImage(event)"><br>
+                                    <img id="imagePreview" class="preview-image" src="#" alt="Aperçu de l'image"><br>
+                                    <label for="LEVEL_CHOICES">   LEVEL  CHOICES  :  </label><br>
+                                    <input type="radio" id="LEVEL_CHOICES" name="level" value="master1"> M1<br>
+                                    <input type="radio" id="LEVEL_CHOICES" name="level" value="master2"> M2<br>
+                                    <input type="radio" id="LEVEL_CHOICES" name="level" value="PreDoc" checked> Pre Doctorate<br>
+                                    
+                                    <label for="school_subject">school_subject :</label>
+                                    <input type="text" id="school_subject" name="school_subject" required><br>
+                                    <label for="field_of_research">field_of_research :</label>
+                                    <input type="text" id="field_of_research" name="field_of_research" required><br>
+                                    <label for="email">Email :</label>
+                                    <input type="email" id="email" name="email" required><br>
+                                
+                                    <label for="motdepasse">Mot de passe :</label>
+                                    <input type="password" id="motdepasse" name="motdepasse" required><br>
+                                
+                                    <input type="submit" value="S'inscrire">
+                                    <div class="checkbox">
+                                        <label> <input type="checkbox" checked="checked"/><i class="check-box"></i>Always Remember Me.</label>
+                                    </div>
+                                </form>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+  
+        </div>
+
+        <script>
+            function previewImage(event) { //pour l'image
+                var image = document.getElementById('imagePreview');
+                image.src = URL.createObjectURL(event.target.files[0]);
+                }
+            function submitForm(event) {
+                event.preventDefault(); // Empêche l'envoi du formulaire
+
+                // Récupérer les valeurs des champs
+                var first_name = document.getElementById("first_name").value;
+                var last_name = document.getElementById("last_name").value;
+                var sexe = document.getElementById("sexe").value;
+                var place_of_birth = document.getElementById("place_of_birth").value;
+                var register_number = document.getElementById("register_number").value;
+                var phone_number = document.getElementById("phone_number").value;
+                var address = document.getElementById("address").value;
+                // Récupérer l'image
+                var photoInput = document.getElementById("photo");
+                    var photo = photoInput.files[0];
+                var LEVEL_CHOICES = document.getElementById("LEVEL_CHOICES").value;
+                var school_subject = document.getElementById("school_subject").value;
+                var field_of_research = document.getElementById("field_of_research").value;
+
+                var email = document.getElementById("email").value;
+                var motdepasse = document.getElementById("motdepasse").value;
+
+                // Valider les données
+                if (nom === "" || email === "" || motdepasse === "") {
+                document.getElementById("message").innerHTML = "Veuillez remplir tous les champs.";
+                } else {
+                document.getElementById("message").innerHTML = "Formulaire soumis avec succès!";
+                // Envoyer les données à un serveur, effectuer des opérations supplémentaires, etc.
+                }
+                }
+        </script>
+    </body>
+</html>

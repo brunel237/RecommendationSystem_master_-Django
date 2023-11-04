@@ -565,11 +565,14 @@ function displayChoiceContent(id){
 		getData(stud_div, "http://127.0.0.1:8000/api/courses/details/", "lectures")
 	}
 }
-var image = document.getElementById('profile_picture')
 
-image.addEventListener('onchange', ()=>{
+function showImageUpload(){
+
+	var image = document.getElementById('profile_picture')
 	var display_div = document.getElementById("profile_display");
 	var img = document.querySelector("#profile_display img");
 	display_div.style.display = "block";
 	img.scr = image.files[0]
-});
+	img.alt = "#"
+
+}

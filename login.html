@@ -21,6 +21,10 @@
 			display: none;
 		}
 	</style>
+
+	<script>
+	
+	</script>
 	
 
 </head>
@@ -65,7 +69,7 @@
 							  </label>
 							</div>
 							<a href="#" title="" class="forgot-pwd">Forgot Password?</a>
-							<p id="errorMessage" class="error-message" style="color: red"></p>
+							<p id="errorMessage-login" class="error-message" style="color: red"></p>
 							<div class="submit-btns">
 								<button class="mtr-btn signin" type="submit"><span>Login</span></button>
 							</div>
@@ -79,25 +83,25 @@
 						<form method="post"  style="overflow:auto; height:400px" >
 							<div class="form-group">	
 							  <input type="text" id="first_name" name="first_name" required="required"/>
-							  <label class="control-label" for="first_name">First Name</label><i class="mtrl-select"></i>
+							  <label class="control-label" for="first_name">First Name *</label><i class="mtrl-select"></i>
 							</div>
 							<div class="form-group">	
 							  <input type="text" id="last_name" name="last_name" required="required"/>
-							  <label class="control-label" for="last_name">Last Name</label><i class="mtrl-select"></i>
+							  <label class="control-label" for="last_name">Last Name *</label><i class="mtrl-select"></i>
 							</div>
 							<div class="form-group">	
 							  <input type="date" id="date_of_birth" name="date_of_birth" required="required"/>
-							  <label class="control-label" for="date_of_birth">Date Of Birth</label><i class="mtrl-select"></i>
+							  <label class="control-label" for="date_of_birth">Date Of Birth *</label><i class="mtrl-select"></i>
 							</div>
 							<div class="form-radio">
 								<div class="radio">
 								  <label>
-									<input type="radio" id="sex_male" name="radio" /><i class="check-box"></i>Male
+									<input type="radio" id="sex_male" name="sex" value="male" checked="checked"/><i class="check-box"></i>Male
 								  </label>
 								</div>
 								<div class="radio">
 								  <label>
-									<input type="radio" id="sex_female" name="radio"/><i class="check-box"></i>Female
+									<input type="radio" id="sex_female" name="sex" value="female"/><i class="check-box"></i>Female
 								  </label>
 								</div>
 							</div>
@@ -105,39 +109,39 @@
 							  <input type="email" name="email" id="email" required="required"/>
 							  <label class="control-label" for="email">
 								<a href="https://wpkixx.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6c29010d05002c">
-									[email&#160;protected]
+									[email&#160;protected] *
 								</a></label><i class="mtrl-select"></i>
 							</div>
 							<div class="form-group">	
 							  <input type="text" id="registration_number" name="registration_number" required="required"/>
-							  <label class="control-label" for="registration_number">Registration Number</label><i class="mtrl-select"></i>
+							  <label class="control-label" for="registration_number">Registration Number *</label><i class="mtrl-select"></i>
 							</div>
 							<div class="form-group">
 							  <input type="tel" id="phone_number" name="phone_number" required="required"/>
-							  <label class="control-label" for="phone_number">Phone Number</label><i class="mtrl-select"></i>
+							  <label class="control-label" for="phone_number">Phone Number *</label><i class="mtrl-select"></i>
 							</div>
 							<div class="form-group">
 							  <input type="text" id="address" name="address" required="required"/>
-							  <label class="control-label" for="address">Address</label><i class="mtrl-select"></i>
+							  <label class="control-label" for="address">Address *</label><i class="mtrl-select"></i>
 							</div>
 							<div class="form-group">	
-							  <input type="text" id="username" name="username" required="required"/>
-							  <label class="control-label" for="input">User Name</label><i class="mtrl-select"></i>
+							  <input type="text" id="regis-username" name="username" required="required"/>
+							  <label class="control-label" for="input">User Name *</label><i class="mtrl-select"></i>
 							</div>
 							<div class="form-group">	
-							  <input type="password" id="password" name="password" required="required"/>
-							  <label class="control-label" for="input">Password</label><i class="mtrl-select"></i>
+							  <input type="password" id="regis-password" name="password" required="required"/>
+							  <label class="control-label" for="input">Password *</label><i class="mtrl-select"></i>
 							</div>
 							<div class="form-group">	
 							  <input type="password" id="password_confirm" name="password_confirm" required="required"/>
-							  <label class="control-label" for="input">Confirm Password</label><i class="mtrl-select"></i>
+							  <label class="control-label" for="password_confirm">Confirm Password *</label><i class="mtrl-select"></i>
 							</div>
 							<div class="form-group">
-							  <div class="control-label">Upload A Profile Pic</div><br><br>
-							  <input type="file" id="profile_picture" name="profile_picture" accept="image/*" onchange="showImageUpload()"/>
-							  <div class="" id="profile_display" style="display: none;">
+							  <div class="control-label">Upload A Profile Picture</div><br><br>
+							  <input type="file" id="profile_picture" name="profile_picture" accept="image/*" onchange="uploadImageRegis(event)" />
+							  <!-- <div class="" id="profile_display" style="display: none;">
 								<img src="" alt="" style="height: 400px; width: 400px;">
-							  </div>
+							  </div> -->
 							</div>
 							<div class="form-group">
 								<br>
@@ -146,41 +150,41 @@
 							<div class="user-choice">
 								<div class="radio">
 								  <label class="user-choice-radio">
-									<input type="radio" id="student-regis-radio" name="radio" onclick="displayChoiceContent(this.id)"/> Student
+									<input type="radio" id="student-regis-radio" name="status" value="student" onclick="displayChoiceContent(this.id)"/> Student
 								  </label>
 								</div>
 								<div class="radio">
 								  <label class="user-choice-radio">
-									<input type="radio" id="se-regis-radio" name="radio" onclick="displayChoiceContent(this.id)"/> School Elder
+									<input type="radio" id="se-regis-radio" name="status" value="school_elder" onclick="displayChoiceContent(this.id)"/> School Elder
 								  </label>
 								</div>
 								<div class="radio">
 								  <label class="user-choice-radio">
-									<input type="radio" id="lecturer-regis-radio" name="radio" onclick="displayChoiceContent(this.id)"/> Lecturer
+									<input type="radio" id="lecturer-regis-radio" name="status" value="lecturer" onclick="displayChoiceContent(this.id)"/> Lecturer
 								  </label>
 								</div>
 							</div>
-							<div class="user-type" id="student-regis">
+							<div class="user-type form-group" id="student-regis">
 								<div class="form-group">
 									<div class="control-label" >Courses Attending : </div><br>
 									<div class="courses-list" id="courses-list-1"></div>
 								</div>
 							</div>
-							<div class="user-type" id="se-regis">
+							<div class="user-type form-group" id="se-regis">
 								<div class="form-group">	
-									<input type="date" id="bachelor-graduate-since" name="bachelor-graduate-since" required="required"/>
-									<label class="control-label" for="bachelor-graduate-since">Date Of Bachelor Degree certification</label><i class="mtrl-select"></i>
+									<input type="date" id="bachelor_graduate_since_se" name="bachelor_graduate_since_se" required="required"/>
+									<label class="control-label" for="bachelor_graduate_since_se">Date Of Bachelor Degree Certification *</label><i class="mtrl-select"></i>
 								</div>
 								<div class="form-group">	
-									<input type="date" id="master-graduate-since" name="master-graduate-since"/>
-									<label class="control-label" for="master-graduate-since">Date Of Master Degree certification</label><i class="mtrl-select"></i>
+									<input type="date" id="master_graduate_since_se" name="master_graduate_since_se"/>
+									<label class="control-label" for="master_graduate_since_se">Date Of Master Degree Certification</label><i class="mtrl-select"></i>
 								</div>
 								<div class="form-group">
 									<div class="control-label" >Courses Attending : </div><br>
 									<div class="courses-list" id="courses-list-2"></div>
 								</div>
 							</div>
-							<div class="user-type" id="lecturer-regis">
+							<div class="user-type form-group" id="lecturer-regis">
 								<div class="form-radio">
 									<div class="radio">
 									  <label>
@@ -195,19 +199,19 @@
 								</div>
 								<div class="form-group">	
 									<input type="date" id="bachelor_graduate_since" name="bachelor_graduate_since" required="required"/>
-									<label class="control-label" for="bachelor_graduate_since">Date Of Bachelor Degree certification</label><i class="mtrl-select"></i>
+									<label class="control-label" for="bachelor_graduate_since">Date Of Bachelor Degree certification *</label><i class="mtrl-select"></i>
 								</div>
 								<div class="form-group">	
 									<input type="date" id="master_graduate_since" name="master_graduate_since" required="required"/>
-									<label class="control-label" for="master_graduate_since">Date Of Master Degree certification</label><i class="mtrl-select"></i>
+									<label class="control-label" for="master_graduate_since">Date Of Master Degree certification *</label><i class="mtrl-select"></i>
 								</div>
 								<div class="form-group">	
 									<input type="date" id="phd_graduate_since" name="phd_graduate_since" required="required"/>
-									<label class="control-label" for="phd_graduate_since">Date Of PhD Degree certification</label><i class="mtrl-select"></i>
+									<label class="control-label" for="phd_graduate_since">Date Of PhD Degree certification *</label><i class="mtrl-select"></i>
 								</div>
 								<div class="form-group">	
 									<input type="text" id="field_of_research" name="field_of_research" required/>
-									<label class="control-label" for="field_of_research">Field(s) Of Research</label><i class="mtrl-select"></i>
+									<label class="control-label" for="field_of_research">Field(s) Of Research *</label><i class="mtrl-select"></i>
 								</div>
 								<div class="form-group">
 									<textarea  id="biography" name="biography" placeholder="biography" style=" height:100px; border: 1px solid rgb(187, 187, 187)"></textarea>
@@ -223,9 +227,9 @@
 								<input type="checkbox" required/><i class="check-box"></i>Accept Terms & Conditions ?
 							  </label>
 							</div>
-							<p id="errorMessage" class="error-message" style="color: red"></p>
+							<p id="errorMessage-regis" class="error-message" style="color: red"></p>
 							<div class="submit-btns">
-								<button class="mtr-btn signup" type="submit"><span>Register</span></button>
+								<button class="mtr-btn signup" type="submit" onclick="registration()" id="registration-button"><span>Register</span></button>
 							</div>
 						</form>
 					</div>
@@ -233,11 +237,26 @@
 			</div>
 		</div>
 	</div>
-</div>
 	
+</div>
 	<script data-cfasync="false" src="../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="js/main.min.js"></script>
 	<script src="js/script.js"></script>
-
-</body>	
+	<script src="js/htmlTags.js"></script>
+	<script>
+		document.querySelector("div#login_container form").addEventListener("submit", function(event) {
+			event.preventDefault();
+		
+			var username = document.getElementById("username").value;
+			var password = document.getElementById("password").value;
+		
+			var formData = {
+				username: username,
+				password: password
+			};
+		
+			sendAuthRequest("http://127.0.0.1:8000/api/auth/login/", formData, "errorMessage-login");
+		});
+	</script>
+</body>
 
 </html>

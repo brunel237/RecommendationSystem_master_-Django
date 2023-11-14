@@ -403,6 +403,39 @@ jQuery(".post-comt-box textarea").on("keydown", function(event) {
 });//document ready end
 
 
+function setCookie(cname, cvalue, exdays) {
+	const d = new Date();
+	d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+	let expires = "expires="+d.toUTCString();
+	document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+  
+function getCookie(cname) {
+	let name = cname + "=";
+	let ca = document.cookie.split(';');
+	for(let i = 0; i < ca.length; i++) {
+	  let c = ca[i];
+	  while (c.charAt(0) == ' ') {
+		c = c.substring(1);
+	  }
+	  if (c.indexOf(name) == 0) {
+		return c.substring(name.length, c.length);
+	  }
+	}
+	return "";
+}
+  
+function checkCookie() {
+	let user = getCookie("username");
+	if (user != "") {
+	  alert("Welcome again " + user);
+	} else {
+	  user = prompt("Please enter your name:", "");
+	  if (user != "" && user != null) {
+		setCookie("username", user, 365);
+	  }
+	}
+} 
 
 function load_auth_container(id, id2){
 	let container = document.getElementById(id);
@@ -412,71 +445,9 @@ function load_auth_container(id, id2){
 	container.innerHTML = temp
 }
 
-
-//--------------------------------------------------------------------------------------------------
-
-//Form Login Control
-var form = document.querySelector("div#login_container form");
-var usernameInput = document.getElementById("username");
-var passwordInput = document.getElementById("password");
-
-// usernameInput.addEventListener("input", function(){
-// 	validateUsername();
-// });
-// usernameInput.addEventListener("input", function(){
-// 	validatePassword();
-// });
-
-function validateUsername() {
-	var username = usernameInput.value;
-	var usernameLength = username.length;
-  
-	if (usernameLength < 3 || usernameLength > 20) {
-	  usernameInput.setCustomValidity("Username must be between 3 and 20 characters.");
-	} else {
-	  usernameInput.setCustomValidity("");
-	}
-}
-
-function validatePassword() {
-	var password = passwordInput.value;
-	var passwordLength = password.length;
-  
-	if (passwordLength < 6 || passwordLength > 12) {
-	  passwordInput.setCustomValidity("Password must be between 6 and 12 characters.");
-	} else {
-	  passwordInput.setCustomValidity("");
-	}
-}
-
-
-function isValidEmail(email) {
-	var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-	return emailRegex.test(email);
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-var loginForm = document.querySelector("div#login_container form");
-
-loginForm.addEventListener("submit", function(event) {
-  event.preventDefault();
-
-  var username = document.getElementById("username").value;
-  var password = document.getElementById("password").value;
-
-  var formData = {
-    username: username,
-    password: password
-  };
-
-  sendLoginRequest(formData);
-});
-
-
-function sendLoginRequest(formData) {
+function sendAuthRequest(url, formData, errorZone) {
 	var xhr = new XMLHttpRequest();
-	xhr.open("POST", "http://127.0.0.1:8000/api/auth/login/", true);
+	xhr.open("POST", url, true);
 	xhr.setRequestHeader("Content-Type", "application/json");
 
 	xhr.onreadystatechange = function() {
@@ -486,13 +457,19 @@ function sendLoginRequest(formData) {
 			var authToken = response.token;
 			var userData = response.user;
 
-			localStorage.setItem("authToken", authToken);
-			localStorage.setItem("userData", JSON.stringify(userData));
+			setCookie("token", authToken, 365);
+			setCookie("id", userData.id, 365);
+			setCookie("username", userData.username, 365);
+			setCookie("first_name", userData.first_name, 365);
+			setCookie("last_name", userData.last_name, 365);
+			setCookie("status", userData.status, 365);
+			setCookie("profile_picture", userData.profile_picture, 365);
 
 			window.location.href = "index.html";
+
 			} else {
 				var response = JSON.parse(xhr.responseText);
-				var errorMessage = document.getElementById("errorMessage");
+				var errorMessage = document.getElementById(errorZone);
 				errorMessage.innerHTML = response.message;
 			}
 		}
@@ -500,11 +477,10 @@ function sendLoginRequest(formData) {
 	xhr.send(JSON.stringify(formData));
 }
 
-function getData(invoker, url, choice_name){
+function getCoursesData(invoker, url, choice_name){
 	var xhr = new XMLHttpRequest();
 	xhr.open("GET", url, true);
 	xhr.setRequestHeader("Content-Type", "application/json");
-	xhr.setRequestHeader("Authorization", "Token "+ localStorage.getItem("authToken") );
 
 
 	xhr.onreadystatechange = function() {
@@ -521,7 +497,7 @@ function getData(invoker, url, choice_name){
 						department of : ${element.department.department_of}
 					</div>
 					<i class="mtrl-select"></i>
-					<input type="checkbox" id="${choice_name}-${element.id}" name=${choice_name} required="required" style="width: 20%;"/>
+					<input type="checkbox" id="${choice_name}-${element.id}" name="courses" value=${element.id} required="required" style="width: 20%;"/>
 				</div>`
 
 				invoker.innerHTML += new_div
@@ -544,7 +520,7 @@ function displayChoiceContent(id){
 		document.getElementById("se-regis").style.display = "none"
 		document.getElementById("lecturer-regis").style.display = "none"
 
-		getData(stud_div, "http://127.0.0.1:8000/api/courses/details/", "courses_attending")
+		getCoursesData(stud_div, "http://127.0.0.1:8000/api/courses/details/", "courses_attending")
 	}
 	else if (id == "se-regis-radio"){
 		document.getElementById("se-regis").style.display = "block"
@@ -553,7 +529,7 @@ function displayChoiceContent(id){
 		document.getElementById("student-regis").style.display = "none"
 		document.getElementById("lecturer-regis").style.display = "none"
 
-		getData(stud_div, "http://127.0.0.1:8000/api/courses/details/", "courses_attending")
+		getCoursesData(stud_div, "http://127.0.0.1:8000/api/courses/details/", "courses_attending")
 	}
 	else{
 		document.getElementById("lecturer-regis").style.display = "block"
@@ -562,17 +538,150 @@ function displayChoiceContent(id){
 		document.getElementById("student-regis").style.display = "none"
 		document.getElementById("se-regis").style.display = "none"
 
-		getData(stud_div, "http://127.0.0.1:8000/api/courses/details/", "lectures")
+		getCoursesData(stud_div, "http://127.0.0.1:8000/api/courses/details/", "lectures")
 	}
 }
 
-function showImageUpload(){
+var  pp = null
 
-	var image = document.getElementById('profile_picture')
-	var display_div = document.getElementById("profile_display");
-	var img = document.querySelector("#profile_display img");
-	display_div.style.display = "block";
-	img.scr = image.files[0]
-	img.alt = "#"
+function uploadImageRegis(event){
+	const file = event.target.files[0];
+	const reader = new FileReader();
 
+	if (! event.target.files || ! event.target.files.length){
+		const defaultProfilePicture = fetch("/images/profile_default.png")
+		.then(response => response.blob())
+		.then(blob => new File([blob], 'profile_default.png'));
+		pp = defaultProfilePicture
+	}
+	else{
+		reader.onload = (event) => {
+			pp = event.target.result;
+		};
+	}
+
+	reader.readAsDataURL(file);
+}
+
+var regisForm = document.querySelector("div#regis_container form");
+
+function registration(){
+	
+	var  username =  document.getElementById("regis-username").value;
+	var  password =  document.getElementById("regis-password").value;
+	var  password_confirm =  document.getElementById("password_confirm").value;
+	var  first_name =  document.getElementById("first_name").value;
+	var  last_name =  document.getElementById("last_name").value;
+	var  date_of_birth =  document.getElementById("date_of_birth").value;
+	var  sex =  document.querySelector("input[name='sex']:checked").value
+	var  email =  document.getElementById("email").value;
+	var  registration_number =  document.getElementById("registration_number").value;
+	var  phone_number =  document.getElementById("phone_number").value;
+	var  address =  document.getElementById("address").value;
+	var  profile_picture =  document.getElementById("profile_picture").files[0];
+	var  status =  document.querySelector("input[name='status']:checked").value
+	
+	var today = new Date();
+	var err = document.getElementById("errorMessage-regis")
+	err.innerHTML = "";
+
+	var dob = new Date(date_of_birth)
+	var numregex = /^[0-9]+$/ ;
+
+	if ((password != password_confirm)||(password.length < 6)){
+		err.innerHTML = "password too short or passwords unidentical"
+		return;
+	}
+	if (!numregex.test(phone_number) || phone_number.length != 9){
+		err.innerHTML = "Invalid phone number. 9 numeric digits required"
+		return;
+	}
+	if (isNaN(dob.getTime()) || dob >= today){
+		err.innerHTML = "Invalid date of birth"
+		return;
+	}
+	if (username.length < 5){
+		err.innerHTML = "Invalid username, atleast 5 characters"
+		return;
+	}
+	if (registration_number.length < 6){
+		err.innerHTML = "Invalid registration number, atleast 6 characters"
+		return;
+	}
+
+	var formData = {
+		"username" : username,
+		"password" : password,
+		"first_name" : first_name,
+		"last_name" : last_name,
+		"sex" : sex,
+		"date_of_birth" : date_of_birth,
+		"registration_number" : registration_number,
+		"phone_number" : phone_number,
+		"email" : email,
+		"address" : address,
+		"status" : status,
+		"profile_picture" : pp
+	}
+
+	if (status == "student"){
+		var array = document.querySelectorAll("input[name='courses']:checked");
+		var courses_attending = Array.from(array).map(function(array) {return Number(array.value);});
+		if (courses_attending.length)
+			formData["courses_attending"] = courses_attending;
+	}
+	else if (status == "school_elder"){
+		var array = document.querySelectorAll("input[name='courses']:checked");
+		var courses_attending = Array.from(array).map(function(array) {return Number(array.value);});
+		var bachelor_graduate_since = document.getElementById("bachelor_graduate_since_se").value;
+		var master_graduate_since = document.getElementById("master_graduate_since_se").value;
+		var bgs = new Date(bachelor_graduate_since)
+		var mgs = new Date(master_graduate_since)
+		if (mgs && ( mgs < bgs)){
+			err.innerHTML = "mismatching certificate dates"
+			return;
+		}
+		if ((mgs && (mgs > today) )||( bgs > today)){
+			err.innerHTML = "mismatching certificate dates"
+			return;
+		}
+		if (courses_attending.length)
+			formData["courses_attending"] = courses_attending;
+		formData["bachelor_graduate_since"] = bachelor_graduate_since;
+		if (master_graduate_since)
+			formData["master_graduate_since"] = master_graduate_since;
+	}
+	else {
+		var bachelor_graduate_since = document.getElementById("bachelor_graduate_since").value;
+		var master_graduate_since = document.getElementById("master_graduate_since").value;
+		var phd_graduate_since = document.getElementById("phd_graduate_since").value;
+		var field_of_research = document.getElementById("field_of_research").value;
+		var biography = document.getElementById("biography").value;
+		var array = document.querySelectorAll("input[name='courses']:checked");
+		var lectures = Array.from(array).map(function(array) { Number(array.value); });
+		var bgs = new Date(bachelor_graduate_since)
+		var mgs = new Date(master_graduate_since)
+		var pgs = new Date(phd_graduate_since); alert(master_graduate_since);
+		if ((pgs < mgs)|| (mgs < bgs)){
+			err.innerHTML = "mismatching certificate dates"
+			return;
+		}
+		if ((pgs > today)|| (mgs > today) ||( bgs > today)){
+			err.innerHTML = "mismatching certificate dates"
+			return;
+		}
+		if (lectures.length)
+			formData["lectures"] = lectures;
+		formData["bachelor_graduate_since"] = bachelor_graduate_since;
+		formData["master_graduate_since"] = master_graduate_since;
+		formData["phd_graduate_since"] = phd_graduate_since;
+		formData["field_of_research"] = field_of_research;
+		if (biography)
+			formData["biography"] = biography;
+	}
+	console.log("formData : " + JSON.stringify(formData));
+
+	formD = new FormData()
+
+	sendAuthRequest("http://127.0.0.1:8000/api/auth/signup/", formData, "errorMessage-regis");
 }

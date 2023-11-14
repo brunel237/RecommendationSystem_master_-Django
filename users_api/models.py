@@ -1,3 +1,4 @@
+from datetime import date
 from django.db import models
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import AbstractUser, BaseUserManager
@@ -23,12 +24,12 @@ class User(AbstractUser):
     GENDER_CHOICES = [('male', 'Male'), ('female', 'Female')]
     STATUS_CHOICES = [('student', 'Student'), ('school_elder', 'School Elder'), ('lecturer', 'Lecturer')]
 
-    date_of_birth = models.DateField()
+    date_of_birth = models.DateField(default=date.today)
     sex = models.CharField(max_length=10, choices=GENDER_CHOICES)
     registration_number = models.CharField(unique=True, max_length=15)
     phone_number = models.CharField(max_length=50, unique=True)
     address = models.CharField(max_length=255)
-    profile_picture = models.FileField(null=True, blank=True)
+    profile_picture = models.ImageField(upload_to="profile_pictures", null=True, blank=True, default="profile_default.png")
 
     updated_at = models.DateTimeField(auto_now_add=True)
     deleted_at = models.DateTimeField(blank=True, null=True)

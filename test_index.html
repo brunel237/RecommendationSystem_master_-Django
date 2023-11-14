@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test</title>
+</head>
+<body>
+    <div class="" id="">
+        <div class="" id="data" style="border: 1px solid; height:20px"></div>
+        <div class="" id="data2" style="border: 1px solid; height:20px"></div>
+    </div>
+</body>
+    <script>
+        let ws = new WebSocket("ws://localhost:8001/ws/posts/")
+
+        ws.onopen = function (event) {
+            console.log('connected !')
+            //allData = JSON.parse(event.data);
+            //for (data in allData){
+            //    document.getElementById('data2').innerHTML = data
+            //}
+        }
+        ws.onmessage = function (event) {
+            console.log('message received')
+            const allData = JSON.parse(event.data);
+            //for (let i=0; i<allData.length; i++ ) {
+            //    alert(JSON.stringify(allData[i]));
+            //};
+            //alert(JSON.stringify(allData));
+            var AllData = new Array()
+            for (let i=0; i<allData.length; i++){
+                display(allData[i])
+            }
+        }
+
+        function display(post){
+            new_elt = document.createElement('div');
+            content_1 = document.createElement('div');
+            content_1.innerHTML = 'ID Post : '+post.id
+            new_elt.appendChild(content_1)
+            content_1 = document.createElement('div');
+            content_1.innerHTML = 'Post Message : '+post.message
+            new_elt.appendChild(content_1)
+            content_1 = document.createElement('div');
+            content_1.innerHTML = 'Author : '+post['author'].first_name+' '+post['author'].last_name
+            new_elt.appendChild(content_1)
+            content_1 = document.createElement('div');
+            content_1.innerHTML = 'Comments : '
+            new_elt.appendChild(content_1)
+            for (let j=0; j<post.comments.length; j++) {
+                content_1 = document.createElement('div');
+                content_1.innerHTML = post.comments[j].content
+                new_elt.appendChild(content_1)
+            }
+            document.getElementById('data').appendChild (new_elt)
+        }
+    </script>
+</html>

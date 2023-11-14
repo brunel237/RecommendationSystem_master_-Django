@@ -24,3 +24,11 @@ class CourseViewSet(viewsets.ModelViewSet):
             return JsonResponse({'success':False, 'message':str(e)}, status=400)
         return JsonResponse({'success':True, 'message':serializer.data})
 
+class AcademicLevelCourseViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.AllowAny]
+    lookup_field = 'id'
+    serializer_class = AcademicLevelCourseSerializer
+    queryset = AcademicLevelCourse.objects.all()
+    
+    
+

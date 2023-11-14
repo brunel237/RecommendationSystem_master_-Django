@@ -35,7 +35,10 @@ class UserViewSet(viewsets.ModelViewSet):
         return JsonResponse(resp, safe=False)
     
     def user_retrieve(self,request=None, id=None):
-        user = User.objects.get(id=id)
+        if id == 0:
+            user = request.user
+        else:
+            user = User.objects.get(id=id)
         if user is not None :
             user = user.get_user()
             if user.user.status=="student":

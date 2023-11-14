@@ -1,11 +1,10 @@
 from rest_framework import serializers
 from django.db.models import F
 from posts_api.models import Post
+from users_api.serializers import UserSerializer
 from .models import Comment
 
 #class CommentSerializer(serializers.ModelSerializer):
-    
-    
     
     #class Meta:
         #model = Comment
@@ -29,29 +28,24 @@ from .models import Comment
      #   validated_data['author'] = self.context['request'].user
       #  return 
 class CommentSerializer(serializers.ModelSerializer):
-    author = serializers.ReadOnlyField(source='get_user_id')  # Champ en lecture seule
+    author = UserSerializer(required=False)
     
     class Meta:
         model = Comment
-        fields = ['author', 'post', 'content',]
+        fields = '__all__'
 
     
     def validate(self, data):
-        author = data.get('author')
-        post = data.get('post')
         content = data.get('content')
         if content is None :
             raise serializers.ValidationError("can't make empty comment")
-
-
         return data
-    
+
+
     def create(self, validated_data):
-        post = validated_data['post']
+        post = Post.objects.get(id=validated_data['post'].id)
         author = self.context['request'].user
-        comment = Comment.objects.create(author=author, **validated_data)
-        post.comment_count = F('comment_count')+ 1 # Incrémente comment_count du Post
-        post.save()
+        comment = Comment.make_comment(post=post, author=author,  content=validated_data['content'])
         return comment
     
     

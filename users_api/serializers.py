@@ -15,6 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id',
+            'password',
             'first_name',
             'last_name',
             'username',
@@ -84,12 +85,9 @@ class StudentSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         courses_attending = validated_data.pop('courses_attending')
-        user_data = validated_data.pop('user')
-        user_data['password'] = make_password(user_data['password'])
-        user = User.objects.create(**user_data)
-        student = Student.objects.create(user=user, **validated_data)
+        student = Student.objects.create(**validated_data)
         student.courses_attending.set(courses_attending)
-        return user
+        return student
 
     def update(self, instance, validated_data):
         
@@ -127,13 +125,9 @@ class SchoolElderSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         courses_attending = validated_data.pop('courses_attending')
-        followers = validated_data.pop('followers')
-        user_data = validated_data.pop('user')
-        user, _ = User.objects.get_or_create(**user_data)
-        se = SchoolElder.objects.create(user=user, **validated_data)
-        se.followers.set(followers)
+        se = SchoolElder.objects.create(**validated_data)
         se.courses_attending.set(courses_attending)
-        return user
+        return se
 
     def update(self, instance, validated_data):
         
@@ -172,12 +166,9 @@ class LecturerSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         lectures = validated_data.pop('lectures')
-        followers = validated_data.pop('followers')
-        user_data = validated_data.pop('user')
-        user = User.objects.create(**user_data)
-        lecturer = Lecturer.objects.create(user=user, **validated_data)
+        lecturer = Lecturer.objects.create(**validated_data)
         lecturer.lectures.set(lectures)
-        return user
+        return lecturer
     
     def update(self, instance, validated_data):
         

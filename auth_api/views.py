@@ -6,41 +6,69 @@ from users_api.serializers import *
 from rest_framework.authentication import TokenAuthentication,  BasicAuthentication
 from django.db import transaction
 from rest_framework.views import APIView
-
+from PIL import Image
+import os
 # @transaction.atomic
 
+def handle_profile_picture(username, profile_picture):
+    if bool(profile_picture):
+        filename = f"{username}-{profile_picture}"
+        file_path = os.path.join('resources/profile/profile_pics/', filename)
+        image = Image.open(profile_picture)
+        image = image.resize((200, 200))  # Adjust the size as per your requirement
+        image.save(file_path)
+    else:
+        file_path = os.path.join('resources/profile/profile_pics/', 'profile_default.png')
+    return file_path
 
 class SignupView(generics.CreateAPIView):
     serializer_class = UserSerializer
     permission_classes = [permissions.AllowAny]
-
+    
     def post(self, request):
-        status = request.data.get('status')
-        try:
-            serializer = UserSerializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            request_data = dict(request.data)
-            request_data["user"] = serializer.data
-        except Exception as e:
-            return  JsonResponse({'success':False, 'message':str(e)}, status=403)
-        
-        if status == "student":
-            slz = StudentSerializer(data=request_data)
-        elif status == "school_elder":
-            slz = SchoolElderSerializer(data=request_data)
-        else:
-            slz = LecturerSerializer(data=request_data)
-            
-        if slz.is_valid():
+        with transaction.atomic():
+            status = request.data.get('status')
+            data = dict(request.data)
+            user_fields = {}
+            other_fields = {}
+            for fields in User._meta.fields:
+                if fields.name in data:
+                    if fields.name == "password":
+                        user_fields["password"] = make_password(data[fields.name])
+                    else:
+                        user_fields[fields.name] = data[fields.name]
+            for fields in data:
+                if fields not in user_fields:
+                    other_fields[fields] = data[fields]
             try:
-                with transaction.atomic():
-                    user = slz.save()
-                    token = Token.objects.create(user=user)
-                return JsonResponse({'success':True, 'token':token.key, 'user':user}, status=201)
-            except Exception as e:
-                return  JsonResponse({'success':False, 'message':str(e)}, status=401)
-        else:
-            return JsonResponse({'success':False, 'message':slz.errors}, status=400)
+                # profile_picture = request.data.pop('profile_picture')
+                try:
+                    user = User.objects.create(**user_fields)
+                    # user.profile_picture.save(profile_picture.name, profile_picture)
+                except Exception as e:
+                    return  JsonResponse({'success':False, 'message':str(e)}, status=401)
+            except:
+                user = User.objects.create(**user_fields)
+            
+            if status == "student":
+                courses_attending = other_fields.pop('courses_attending')
+                student = Student.objects.create(user=user, **other_fields)
+                student.courses_attending.set(courses_attending)
+                serialized_data = StudentSerializer(student)
+            elif status == "school_elder":
+                courses_attending = other_fields.pop('courses_attending')
+                se = SchoolElder.objects.create(user=user, **other_fields)
+                se.courses_attending.set(courses_attending)
+                serialized_data = SchoolElderSerializer(se)
+            else:
+                lectures = other_fields.pop('lectures')
+                lecturer = Lecturer.objects.create(user=user, **other_fields)
+                lectures.courses_attending.set(lectures)
+                serialized_data = LecturerSerializer(lecturer)
+            
+            token = Token.objects.create(user=user)
+            return JsonResponse({'success':True, 'token':token.key, 'user':serialized_data.data}, status=201)
+            
     
 
 class LoginView(generics.CreateAPIView):

@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -42,20 +43,17 @@ INSTALLED_APPS = [
     'auth_api',
     'messages_api',
     'forums_api',
-<<<<<<< HEAD
     'inbox_api',
     'courses_api',
     'faculties_api',
     'departments_api',
     'posts_api',
     'recommendation_api',
-=======
-    'posts_api',
     'comments_api',
->>>>>>> 607e2508009c528d8f81cd18e546d4aacaf227f9
     'rest_framework',
     'rest_framework.authtoken',
-    # 'django_faker',
+    'channels',
+    'channels_redis',
 ]
 
 MIDDLEWARE = [
@@ -97,9 +95,15 @@ REST_FRAMEWORK = {
 #         'rest_framework.permissions.IsAdminUser'
 #    ),
 }
-
-WSGI_APPLICATION = 'core.wsgi.application'
-
+ASGI_APPLICATION = 'core.asgi.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('localhost', 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -165,3 +169,7 @@ AUTHENTICATION_BACKENDS = [
     'users_api.backends.CustomUserModelBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+# MEDIA_URL = '/resources/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'resources')
+

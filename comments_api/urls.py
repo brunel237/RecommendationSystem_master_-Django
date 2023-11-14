@@ -4,8 +4,8 @@ from .views import *
 app_name = "comments_api"
 
 urlpatterns = [
-    path('create/', CommentViewSet.as_view({"post" : "create"}), name='comment-create'),
-    path('<int:comment_id>/delete/', CommentDeleteAPIView.as_view(), name='comment-delete'),
-    path('<int:pk>/retrieve/', CommentRetrieveView.as_view(), name='comment-retrieve'),
-    path('<int:post_id>/commentlist/',CommentListView.as_view(), name = 'comment-list'),
+    path('new/', CommentViewSet.as_view({"post" : "create"}), name='comment-create'),
+    path('<int:comment_id>/delete/', CommentViewSet.as_view({"delete":"destroy"}), name='comment-delete'),
+    path('<int:pk>/retrieve/', CommentViewSet.as_view({"get":"retrieve"}), name='comment-retrieve'),
+    path('<int:pk_post>/commentlist/',CommentViewSet.as_view({"get":"list"}), name = 'comment-list'),
 ]

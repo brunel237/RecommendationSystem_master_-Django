@@ -49,8 +49,6 @@ class CommentViewSet(viewsets.ModelViewSet):
 #         return Response({"success": True}, status=200)
 
 
-
-
 # class CommentRetrieveView(generics.RetrieveAPIView):
 #     serializer_class = CommentSerializer
 #     lookup_field = 'pk'
@@ -64,4 +62,4 @@ class CommentViewSet(viewsets.ModelViewSet):
 #     def get_queryset(self):
 #         post_id = self.kwargs['post_id']
 #         return Comment.objects.filter(post_id=post_id, is_deleted=False)
-    
+

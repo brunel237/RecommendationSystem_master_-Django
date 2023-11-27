@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('file', models.FileField(blank=True, null=True, upload_to='media')),
                 ('file_type', models.CharField(blank=True, max_length=255, null=True)),
-                ('post', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='media_post', to='posts_api.post')),
+                ('post', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='media_posts', to='posts_api.post')),
             ],
         ),
     ]

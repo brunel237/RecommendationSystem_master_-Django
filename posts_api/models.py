@@ -53,7 +53,7 @@ class Like(models.Model):
 
 class PostMedia(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='media_post')
-    file = models.FileField(upload_to="media", blank=True, null=True)
+    file = models.FileField(upload_to="posts/", blank=True, null=True)
     file_type = models.CharField(max_length=255, blank=True, null=True)
 
 

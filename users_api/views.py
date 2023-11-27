@@ -21,7 +21,7 @@ class UserViewSet(viewsets.ModelViewSet):
         serialized_data = serializer.data
         return JsonResponse(serialized_data)
     
-    def user_list(self,request=None, validated_data=None):
+    def user_list(self, request=None, validated_data=None):
         users = User.objects.all()
         resp = []
         for user in users:

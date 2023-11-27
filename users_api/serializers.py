@@ -4,13 +4,23 @@ from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 from .models import *
 from courses_api.models import AcademicLevelCourse
+from PIL import Image
+import os
 
+
+def handle_image(name, profile_picture, path):
+    filename = f"{name}-profile.png"
+    file_path = 'resources/'+path+filename
+    image = Image.open(profile_picture)
+    image = image.resize((200, 200))
+    image.save(file_path)
+    return path+filename
 
 class UserSerializer(serializers.ModelSerializer):
-    
     registration_number = serializers.CharField(min_length=6)
     email = serializers.EmailField()
     date_of_birth = serializers.DateField()
+    profile_picture = serializers.FileField(allow_null=True)
     class Meta:
         model = User
         fields = [
@@ -39,10 +49,15 @@ class UserSerializer(serializers.ModelSerializer):
         return user.data
 
     def create(self, validated_data):
+        profile_picture = validated_data.get('profile_picture')
+        if profile_picture:
+            validated_data["profile_picture"] = handle_image(validated_data["username"], profile_picture, 'profile/profile_pics/')
+        else:
+            validated_data["profile_picture"] = 'profile/profile_pics/profile_default.png'
+
         password = validated_data.pop('password')
-        user = User(**validated_data)
-        user.set_password(password)
-        user.save()
+        validated_data["password"] = make_password(password)
+        user = User.objects.create(**validated_data)
         return user
     
     def update(self, instance, validated_data):
@@ -75,7 +90,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class StudentSerializer(serializers.ModelSerializer):
     user = UserSerializer()
-    courses_attending = serializers.PrimaryKeyRelatedField(queryset=AcademicLevelCourse.objects.all(), many=True)
+    courses_attending = serializers.PrimaryKeyRelatedField(queryset=AcademicLevelCourse.objects.all(), many=True, required=False)
     class Meta:
         model = Student
         fields = [
@@ -112,7 +127,7 @@ class StudentSerializer(serializers.ModelSerializer):
 class SchoolElderSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     followers = UserSerializer(many=True)
-    courses_attending = serializers.PrimaryKeyRelatedField(queryset=AcademicLevelCourse.objects.all(), many=True)
+    courses_attending = serializers.PrimaryKeyRelatedField(queryset=AcademicLevelCourse.objects.all(), many=True, required=False)
 
     class Meta:
         model = SchoolElder
@@ -153,7 +168,7 @@ class SchoolElderSerializer(serializers.ModelSerializer):
 
 class LecturerSerializer(serializers.ModelSerializer):
     user = UserSerializer()
-    lectures = serializers.PrimaryKeyRelatedField(queryset=AcademicLevelCourse.objects.all(), many=True)
+    lectures = serializers.PrimaryKeyRelatedField(queryset=AcademicLevelCourse.objects.all(), many=True, required=False)
     followers = UserSerializer(many=True)
     
     class Meta:

@@ -7,7 +7,6 @@ from .models import Post
 from .serializers import *
 
 
-
 from djangochannelsrestframework.generics import GenericAsyncAPIConsumer
 from djangochannelsrestframework.mixins import ListModelMixin
 from djangochannelsrestframework.observer import model_observer
@@ -31,6 +30,7 @@ class PostConsumer(ListModelMixin, GenericAsyncAPIConsumer):
         # await self.send(text_data=json.dumps({"message": "ok"}))  
         await self.send_posts()
         # await self.model_change.subscribe()
+
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
@@ -62,7 +62,7 @@ class PostConsumer(ListModelMixin, GenericAsyncAPIConsumer):
         list_array = []
         for post in posts:
             slz = PostSerializer(post)
-            media = PostMediaSerializer(PostMedia.objects.filter(post=post), many=True)
+            media = PostMediaSerializer(PostMedia.objects.get(post=post))
             cmt = CommentSerializer(Comment.objects.filter(post=post), many=True)
             slz_data = dict(slz.data)
             slz_data["comments"] = cmt.data

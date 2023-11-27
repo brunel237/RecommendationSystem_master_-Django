@@ -29,6 +29,8 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -54,6 +56,10 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'channels',
     'channels_redis',
+    # 'moviepy',
+    'PyPDF2',
+    'ffmpeg',
+    'pydub',
 ]
 
 MIDDLEWARE = [
@@ -91,11 +97,10 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
-#    'DEFAULT_PERMISSION_CLASSES': (
-#         'rest_framework.permissions.IsAdminUser'
-#    ),
 }
+
 ASGI_APPLICATION = 'core.asgi.application'
+
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
@@ -150,14 +155,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# CORS_ORIGIN_ALLOW_ALL = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -170,6 +173,6 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-# MEDIA_URL = '/resources/'
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'resources')
+MEDIA_URL = 'resources/'
+MEDIA_ROOT = 'resources/'
 

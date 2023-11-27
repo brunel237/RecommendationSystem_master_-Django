@@ -29,7 +29,7 @@ class User(AbstractUser):
     registration_number = models.CharField(unique=True, max_length=15)
     phone_number = models.CharField(max_length=50, unique=True)
     address = models.CharField(max_length=255)
-    profile_picture = models.ImageField(upload_to="profile_pictures", null=True, blank=True, default="profile_default.png")
+    profile_picture = models.FileField(upload_to="profile/profile_pics/", default="profile/profile_pics/profile_default.png", null=True, blank=True)
 
     updated_at = models.DateTimeField(auto_now_add=True)
     deleted_at = models.DateTimeField(blank=True, null=True)

@@ -1,0 +1,17 @@
+django
+daphne
+redis
+channels_redis
+django-cors-headers
+channels
+django-channels
+surprise
+scipy
+scikit-learn
+djangorestframework
+PyPDF2
+ffmpeg
+pydub
+surprise
+faker
+djangochannelsrestframework
